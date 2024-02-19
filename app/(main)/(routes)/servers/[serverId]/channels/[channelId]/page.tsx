@@ -5,6 +5,7 @@ import { ChatHeader } from "@/components/chat/chat-header";
 import { currentProfile } from "@/lib/current-profile";
 import { ChatInput } from "@/components/chat/chat-input";
 import { db } from "@/lib/db";
+import { ChatMessages } from "@/components/chat/chat-messages";
 
 interface ChannelIdPageProps {
 	params: {
@@ -43,7 +44,20 @@ const ChannelIdPage = async ({ params }: ChannelIdPageProps) => {
 		<div className="bg-white dark:bg-[#313338] flex flex-col h-full">
 			<ChatHeader serverId={serverId} name={channel?.name} type="channel" />
 
-			<div className="flex-1">Future message</div>
+			<ChatMessages
+				name={channel.name}
+				member={member}
+				chatId={channel.id}
+				apiUrl="/api/messages"
+				socketQuery={{
+					channelId: channel.id,
+					serverId: channel.serverId,
+				}}
+				socketUrl="/api/socket/messages"
+				paramKey="channelId"
+				paramValue={channel.id}
+				type="channel"
+			/>
 
 			<ChatInput
 				name={channel.name}
