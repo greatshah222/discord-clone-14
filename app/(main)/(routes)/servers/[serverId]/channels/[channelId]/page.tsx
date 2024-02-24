@@ -6,6 +6,8 @@ import { currentProfile } from "@/lib/current-profile";
 import { ChatInput } from "@/components/chat/chat-input";
 import { db } from "@/lib/db";
 import { ChatMessages } from "@/components/chat/chat-messages";
+import { ChannelType } from "@prisma/client";
+import { MediaRoom } from "@/components/media-room";
 
 interface ChannelIdPageProps {
 	params: {
@@ -44,30 +46,42 @@ const ChannelIdPage = async ({ params }: ChannelIdPageProps) => {
 		<div className="bg-white dark:bg-[#313338] flex flex-col h-full">
 			<ChatHeader serverId={serverId} name={channel?.name} type="channel" />
 
-			<ChatMessages
-				name={channel.name}
-				member={member}
-				chatId={channel.id}
-				apiUrl="/api/messages"
-				socketQuery={{
-					channelId: channel.id,
-					serverId: channel.serverId,
-				}}
-				socketUrl="/api/socket/messages"
-				paramKey="channelId"
-				paramValue={channel.id}
-				type="channel"
-			/>
+			{channel.type === ChannelType.TEXT && (
+				<>
+					<ChatMessages
+						name={channel.name}
+						member={member}
+						chatId={channel.id}
+						apiUrl="/api/messages"
+						socketQuery={{
+							channelId: channel.id,
+							serverId: channel.serverId,
+						}}
+						socketUrl="/api/socket/messages"
+						paramKey="channelId"
+						paramValue={channel.id}
+						type="channel"
+					/>
 
-			<ChatInput
-				name={channel.name}
-				type="channel"
-				apiUrl="/api/socket/messages"
-				query={{
-					channelId: channel.id,
-					serverId: channel.serverId,
-				}}
-			/>
+					<ChatInput
+						name={channel.name}
+						type="channel"
+						apiUrl="/api/socket/messages"
+						query={{
+							channelId: channel.id,
+							serverId: channel.serverId,
+						}}
+					/>
+				</>
+			)}
+
+			{channel.type === ChannelType.AUDIO && (
+				<MediaRoom chatId={channelId} video={false} audio={true} />
+			)}
+
+			{channel.type === ChannelType.VIDEO && (
+				<MediaRoom chatId={channelId} video={true} audio={true} />
+			)}
 		</div>
 	);
 };
